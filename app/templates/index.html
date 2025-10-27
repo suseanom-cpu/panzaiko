@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パン在庫管理システム - ログイン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* バナーエリア */
+        .banners {
+            margin-bottom: 20px;
+        }
+
+        .banner {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideDown 0.5s ease;
+        }
+
+        .banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .banner.weather {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .banner.event {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .banner.event.high {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .banner.event.very_high {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            animation: pulse 2s ease infinite;
+        }
+
+        .banner-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .banner-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .banner-icon {
+            font-size: 24px;
+        }
+
+        .banner-summary {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .banner-detail {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .banner-detail.show {
+            display: block;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* ログインカード */
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.6s ease;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        /* ローディング */
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- バナーエリア -->
+        <div class="banners" id="banners">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>情報を読み込み中...</p>
+            </div>
+        </div>
+
+        <!-- ログインカード -->
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🥖 パン在庫管理</h1>
+                <p>精度重視の在庫最適化システム</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">お名前</label>
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="山田太郎"
+                        required
+                        autocomplete="name"
+                    >
+                </div>
+
+                <button type="submit" class="btn">ログイン</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // バナー情報の読み込みと表示
+        // ============================================
+        async function loadBanners() {
+            const bannersContainer = document.getElementById('banners');
+
+            try {
+                const [weatherRes, eventsRes] = await Promise.all([
+                    fetch('/api/weather'),
+                    fetch('/api/events')
+                ]);
+
+                const weather = await weatherRes.json();
+                const eventsData = await eventsRes.json();
+
+                let bannersHTML = '';
+
+                // 天気バナー
+                if (weather && !weather.error) {
+                    const weatherIcon = getWeatherIcon(weather.main);
+                    bannersHTML += `
+                        <div class="banner weather" onclick="toggleDetail(this)">
+                            <div class="banner-header">
+                                <div class="banner-title">
+                                    <span class="banner-icon">${weatherIcon}</span>
+                                    <span>神戸市中央区の天気</span>
+                                </div>
+                                <span class="expand-icon">▼</span>
+                            </div>
+                            <div class="banner-summary">
+                                ${weather.temp}°C・${weather.description}
+                            </div>
+                            <div class="banner-detail">
+                                <strong>詳細情報</strong><br>
+                                気温: ${weather.temp}°C（体感 ${weather.feels_like}°C）<br>
+                                湿度: ${weather.humidity}%<br>
+                                天候: ${weather.description}<br><br>
+                                ${getWeatherAdvice(weather)}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // イベントバナー
+                if (eventsData && eventsData.events && eventsData.events.length > 0) {
+                    eventsData.events.forEach(event => {
+                        const impactClass = event.impact || 'medium';
+                        const eventIcon = getEventIcon(event.impact);
+                        const daysText = event.days_until === 0 ? '今日' :
+                                       event.days_until === 1 ? '明日' :
+                                       `${event.days_until}日後`;
+
+                        bannersHTML += `
+                            <div class="banner event ${impactClass}" onclick="toggleDetail(this)">
+                                <div class="banner-header">
+                                    <div class="banner-title">
+                                        <span class="banner-icon">${eventIcon}</span>
+                                        <span>${event.name}（${daysText}）</span>
+                                    </div>
+                                    <span class="expand-icon">▼</span>
+                                </div>
+                                <div class="banner-summary">
+                                    ${getImpactText(event.impact)}
+                                </div>
+                                <div class="banner-detail">
+                                    <strong>詳細情報</strong><br>
+                                    日付: ${event.date}<br>
+                                    影響度: ${getImpactText(event.impact)}<br><br>
+                                    ${event.detail}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                if (bannersHTML === '') {
+                    bannersHTML = '<p style="color: white; text-align: center;">現在、特別なお知らせはありません</p>';
+                }
+
+                bannersContainer.innerHTML = bannersHTML;
+
+            } catch (error) {
+                console.error('バナー情報の取得に失敗:', error);
+                bannersContainer.innerHTML = '<p style="color: white; text-align: center;">情報の取得に失敗しました</p>';
+            }
+        }
+
+        function toggleDetail(banner) {
+            const detail = banner.querySelector('.banner-detail');
+            const icon = banner.querySelector('.expand-icon');
+
+            detail.classList.toggle('show');
+            icon.classList.toggle('rotated');
+        }
+
+        function getWeatherIcon(main) {
+            const icons = {
+                'Clear': '☀️',
+                'Clouds': '☁️',
+                'Rain': '🌧️',
+                'Drizzle': '🌦️',
+                'Thunderstorm': '⛈️',
+                'Snow': '❄️',
+                'Mist': '🌫️',
+                'Fog': '🌫️'
+            };
+            return icons[main] || '🌤️';
+        }
+
+        function getEventIcon(impact) {
+            if (impact === 'very_high') return '🔥';
+            if (impact === 'high') return '⚠️';
+            return 'ℹ️';
+        }
+
+        function getImpactText(impact) {
+            const texts = {
+                'very_high': '来客数大幅増加予想',
+                'high': '来客数増加予想',
+                'medium': '来客数やや増加',
+                'low': '通常営業'
+            };
+            return texts[impact] || '要確認';
+        }
+
+        function getWeatherAdvice(weather) {
+            if (weather.main === 'Rain') {
+                return '☔ 雨天のため客足が減少する可能性があります。発注量を調整してください。';
+            } else if (weather.main === 'Clear' && weather.temp > 25) {
+                return '☀️ 晴天で気温も高く、客足が増える可能性があります。';
+            } else if (weather.temp < 10) {
+                return '❄️ 気温が低いため、温かい商品の需要が高まる可能性があります。';
+            }
+            return '通常通りの営業が見込まれます。';
+        }
+
+        // ============================================
+        // ログイン処理
+        // ============================================
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+
+            if (!username) {
+                alert('名前を入力してください');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '/dashboard';
+                } else {
+                    alert(data.error || 'ログインに失敗しました');
+                }
+            } catch (error) {
+                console.error('ログインエラー:', error);
+                alert('ログインに失敗しました。もう一度お試しください。');
+            }
+        });
+
+        // ============================================
+        // 初期化
+        // ============================================
+        loadBanners();
+    </script>
+</body>
+</html>

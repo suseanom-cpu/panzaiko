@@ -1,0 +1,7 @@
+Flask==3.0.3
+requests==2.31.0
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.13.1
+statsmodels==0.14.1
+gunicorn==21.2.0

@@ -1,0 +1,30 @@
+{
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_8587d0077dca960e84a52f5f1b86bcec.panzaiko.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "_e7098af1a1e626624b30a92ebd637f0c.jkddzztszm.acm-validations.aws."
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_f1627ce32b88dd7bfdf2868b5c4a9519.www.panzaiko.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "_df1e20c456ef3a9332c414d1ddea4c45.jkddzztszm.acm-validations.aws."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パン在庫管理システム - ダッシュボード</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* タブナビゲーション */
+        .tabs-container {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* コンテンツエリア */
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* カード */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* テーブル */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* インライン編集用の入力フィールド */
+        .editable-input {
+            width: 80px;
+            padding: 4px 8px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* バッジ */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* フォーム */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        /* グリッドレイアウト */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        /* 統計カード */
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .stat-card-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* バナー（ダッシュボード用） */
+        .dashboard-banners {
+            margin-bottom: 20px;
+        }
+
+        .banner-mini {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .banner-mini.warning {
+            border-left-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .banner-mini-icon {
+            font-size: 24px;
+        }
+
+        .banner-mini-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ローディング */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* モーダル - カスタムポップアップ */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-overlay.show {
+            display: flex;
+        }
+
+        .popup {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: popupSlideIn 0.3s ease;
+        }
+
+        @keyframes popupSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .popup-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .popup-body {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .popup-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .popup.error .popup-header {
+            color: #e74c3c;
+        }
+
+        .popup.success .popup-header {
+            color: #28a745;
+        }
+
+        .popup.warning .popup-header {
+            color: #f39c12;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .tabs {
+                overflow-x: scroll;
+            }
+
+            .grid-2, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* インライン編集モード */
+        .edit-mode {
+            background: #fffbf0 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-left">
+            <div class="header-title">🥖 パン在庫管理システム</div>
+            <div class="user-badge">{{ username }}</div>
+        </div>
+        <button class="logout-btn" onclick="logout()">ログアウト</button>
+    </div>
+
+    <!-- タブナビゲーション -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="dashboard">📊 ダッシュボード</button>
+            <button class="tab" data-tab="input">✏️ データ入力</button>
+            <button class="tab" data-tab="edit">🔧 データ修正</button>
+            <button class="tab" data-tab="debug">🐛 デバッグ</button>
+        </div>
+    </div>
+
+    <!-- コンテンツエリア -->
+    <div class="content">
+        <!-- ダッシュボードタブ -->
+        <div class="tab-content active" id="dashboard-tab">
+            <div class="dashboard-banners" id="dashboardBanners"></div>
+
+            <div class="grid-4" id="statsCards">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>データを読み込み中...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📦 注文推奨一覧</div>
+                <div class="table-container" id="recommendationsTable">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>計算中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📋 在庫バッチ詳細（FIFO管理）</div>
+                <div class="table-container" id="batchesTable">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>読み込み中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="switchTab('input')">📝 データを入力する</button>
+            </div>
+        </div>
+
+        <!-- データ入力タブ -->
+        <div class="tab-content" id="input-tab">
+            <div class="card">
+                <div class="card-title">📝 データ入力</div>
+                <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
+                    ⚠️ 同じ日に複数回入力した場合、最新のデータで上書きされます。
+                </p>
+
+                <div class="grid-2" style="margin-bottom: 24px;">
+                    <div class="card" style="background: #f8f9fa;">
+                        <h4 style="margin-bottom: 12px; font-size: 16px;">📊 簡易ダッシュボード</h4>
+                        <div id="miniDashboard">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                <p>読み込み中...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="margin-bottom: 16px; font-size: 16px;">入力フォーム</h4>
+                        <form id="inputForm">
+                            <div class="form-group">
+                                <label class="form-label">📅 日付</label>
+                                <input type="date" class="form-input" id="inputDate" name="date" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">細パン</label>
+                                <div class="form-row">
+                                    <input type="number" class="form-input" name="細パン_purchased" placeholder="買った個数" min="0" required>
+                                    <input type="number" class="form-input" name="細パン_leftover" placeholder="余り数" min="0" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">太パン</label>
+                                <div class="form-row">
+                                    <input type="number" class="form-input" name="太パン_purchased" placeholder="買った個数" min="0" required>
+                                    <input type="number" class="form-input" name="太パン_leftover" placeholder="余り数" min="0" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">サンドパン</label>
+                                <div class="form-row">
+                                    <input type="number" class="form-input" name="サンドパン_purchased" placeholder="買った個数" min="0" required>
+                                    <input type="number" class="form-input" name="サンドパン_leftover" placeholder="余り数" min="0" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">バゲット</label>
+                                <div class="form-row">
+                                    <input type="number" class="form-input" name="バゲット_purchased" placeholder="買った個数" min="0" required>
+                                    <input type="number" class="form-input" name="バゲット_leftover" placeholder="余り数" min="0" required>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px;">
+                                <button type="submit" class="btn btn-primary" style="flex: 1;">保存</button>
+                                <button type="button" class="btn btn-secondary" onclick="switchTab('dashboard')">完全なダッシュボードへ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- データ修正タブ -->
+        <div class="tab-content" id="edit-tab">
+            <div class="card">
+                <div class="card-title">🔧 データ修正</div>
+
+                <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
+                    デフォルト：今日のデータを直接編集できます。数値をクリックして変更し、保存ボタンを押してください。
+                </p>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="margin-right: 12px;">
+                        <input type="radio" name="editMode" value="today" checked onchange="loadRecords()"> デフォルト（今日のデータ）
+                    </label>
+                    <label>
+                        <input type="radio" name="editMode" value="advanced" onchange="loadRecords()"> アドバンス（過去のデータ）
+                    </label>
+                </div>
+
+                <div class="table-container" id="editRecordsTable">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>データを読み込み中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- デバッグタブ -->
+        <div class="tab-content" id="debug-tab">
+            <div class="card">
+                <div class="card-title">🧪 バックテスト（MAE / RMSE）</div>
+
+                <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
+                    過去のデータを使用してモデルの精度を検証します。MAE（平均絶対誤差）とRMSE（二乗平均平方根誤差）が小さいほど精度が高いことを示します。
+                </p>
+
+                <button class="btn btn-primary" onclick="runBacktest()">バックテストを実行</button>
+
+                <div id="backtestResults" style="margin-top: 20px;"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📜 ログ閲覧</div>
+
+                <div class="form-group">
+                    <label class="form-label">パスワード</label>
+                    <input type="password" id="logPassword" class="form-input" placeholder="パスワードを入力（047）" style="max-width: 300px;">
+                </div>
+
+                <button class="btn btn-primary" onclick="viewLogs()">ログを表示</button>
+
+                <div id="logsContainer" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- カスタムポップアップ -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()">
+        <div class="popup" id="popup" onclick="event.stopPropagation()">
+            <div class="popup-header" id="popupHeader"></div>
+            <div class="popup-body" id="popupBody"></div>
+            <div class="popup-footer">
+                <button class="btn btn-primary" onclick="closePopup()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // グローバル変数
+        // ============================================
+        let currentRecommendations = null;
+        let editingRecords = {};
+
+        // ============================================
+        // ポップアップ通知機能
+        // ============================================
+        function showPopup(type, title, message) {
+            const overlay = document.getElementById('popupOverlay');
+            const popup = document.getElementById('popup');
+            const header = document.getElementById('popupHeader');
+            const body = document.getElementById('popupBody');
+
+            // タイプに応じたアイコン
+            const icons = {
+                'error': '❌',
+                'success': '✅',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            };
+
+            popup.className = 'popup ' + type;
+            header.textContent = (icons[type] || '') + ' ' + title;
+            body.textContent = message;
+            overlay.classList.add('show');
+        }
+
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('show');
+        }
+
+        // ============================================
+        // タブ切り替え
+        // ============================================
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                switchTab(targetTab);
+            });
+        });
+
+        function switchTab(tabName) {
+            // タブボタンのアクティブ状態を更新
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+
+            // タブコンテンツの表示切り替え
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            // タブごとの初期化処理
+            if (tabName === 'dashboard') {
+                loadDashboard();
+            } else if (tabName === 'input') {
+                loadMiniDashboard();
+            } else if (tabName === 'edit') {
+                loadRecords();
+            }
+        }
+
+        // ============================================
+        // ログアウト
+        // ============================================
+        async function logout() {
+            if (!confirm('ログアウトしますか？')) return;
+
+            try {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('ログアウトエラー:', error);
+                showPopup('error', 'エラー', 'ログアウトに失敗しました');
+            }
+        }
+
+        // ============================================
+        // ダッシュボード読み込み
+        // ============================================
+        async function loadDashboard() {
+            try {
+                // バナー読み込み
+                await loadDashboardBanners();
+
+                // 推奨データ読み込み
+                const response = await fetch('/api/dashboard');
+                const data = await response.json();
+
+                if (data.success) {
+                    currentRecommendations = data.recommendations;
+                    renderStatsCards(data.recommendations);
+                    renderRecommendationsTable(data.recommendations);
+                    renderBatchesTable(data.recommendations);
+                } else {
+                    showPopup('error', 'エラー', 'ダッシュボードデータの取得に失敗しました');
+                }
+            } catch (error) {
+                console.error('ダッシュボード読み込みエラー:', error);
+                showPopup('error', 'エラー', 'データの読み込みに失敗しました');
+            }
+        }
+
+        async function loadDashboardBanners() {
+            try {
+                const [weatherRes, eventsRes] = await Promise.all([
+                    fetch('/api/weather'),
+                    fetch('/api/events')
+                ]);
+
+                const weather = await weatherRes.json();
+                const eventsData = await eventsRes.json();
+
+                let bannersHTML = '';
+
+                if (weather && !weather.error) {
+                    const weatherIcon = getWeatherIcon(weather.main);
+                    bannersHTML += `
+                        <div class="banner-mini">
+                            <span class="banner-mini-icon">${weatherIcon}</span>
+                            <div class="banner-mini-text">
+                                <strong>神戸市中央区</strong>: ${weather.temp}°C・${weather.description}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (eventsData && eventsData.events && eventsData.events.length > 0) {
+                    eventsData.events.slice(0, 2).forEach(event => {
+                        const eventIcon = getEventIcon(event.impact);
+                        const daysText = event.days_until === 0 ? '今日' :
+                                       event.days_until === 1 ? '明日' :
+                                       `${event.days_until}日後`;
+
+                        bannersHTML += `
+                            <div class="banner-mini warning">
+                                <span class="banner-mini-icon">${eventIcon}</span>
+                                <div class="banner-mini-text">
+                                    <strong>${event.name}</strong>（${daysText}）: ${getImpactText(event.impact)}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                document.getElementById('dashboardBanners').innerHTML = bannersHTML;
+            } catch (error) {
+                console.error('バナー読み込みエラー:', error);
+            }
+        }
+
+        function renderStatsCards(recommendations) {
+            const breads = Object.keys(recommendations);
+            let html = '';
+
+            breads.forEach(bread => {
+                const rec = recommendations[bread];
+                html += `
+                    <div class="stat-card">
+                        <div class="stat-card-title">${bread}</div>
+                        <div class="stat-card-value">${rec.order}</div>
+                        <div class="stat-card-subtitle">個 注文推奨</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('statsCards').innerHTML = html;
+        }
+
+        function renderRecommendationsTable(recommendations) {
+            const breads = Object.keys(recommendations);
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>パン</th>
+                            <th>予測必要数</th>
+                            <th>現在在庫</th>
+                            <th>目標在庫</th>
+                            <th>注文推奨量</th>
+                            <th>影響係数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            breads.forEach(bread => {
+                const rec = recommendations[bread];
+                html += `
+                    <tr>
+                        <td><strong>${bread}</strong></td>
+                        <td>${rec.forecast}</td>
+                        <td>${rec.leftover}</td>
+                        <td>${rec.target}</td>
+                        <td><span class="badge badge-success">${rec.order}個</span></td>
+                        <td>×${rec.impact_multiplier}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('recommendationsTable').innerHTML = html;
+        }
+
+        function renderBatchesTable(recommendations) {
+            const breads = Object.keys(recommendations);
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>パン</th>
+                            <th>追加日</th>
+                            <th>元数量</th>
+                            <th>残量</th>
+                            <th>経過日数</th>
+                            <th>消費期限まで</th>
+                            <th>状態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            breads.forEach(bread => {
+                const rec = recommendations[bread];
+                if (rec.batches && rec.batches.length > 0) {
+                    rec.batches.forEach(batch => {
+                        let statusBadge = '';
+                        if (batch.status === 'expired') {
+                            statusBadge = '<span class="badge badge-danger">廃棄</span>';
+                        } else if (batch.urgency === 'high') {
+                            statusBadge = '<span class="badge badge-danger">+1日</span>';
+                        } else if (batch.urgency === 'medium') {
+                            statusBadge = '<span class="badge badge-warning">残り2日</span>';
+                        } else {
+                            statusBadge = '<span class="badge badge-success">残り3日</span>';
+                        }
+
+                        html += `
+                            <tr>
+                                <td><strong>${bread}</strong></td>
+                                <td>${batch.added_date}</td>
+                                <td>${batch.qty}</td>
+                                <td>${batch.remaining}</td>
+                                <td>${batch.days_old}日</td>
+                                <td>${batch.days_until_expiry}日</td>
+                                <td>${statusBadge}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+
+            if (html === `<table><thead><tr><th>パン</th><th>追加日</th><th>元数量</th><th>残量</th><th>経過日数</th><th>消費期限まで</th><th>状態</th></tr></thead><tbody>`) {
+                html += '<tr><td colspan="7" style="text-align: center; color: #999;">在庫バッチがありません</td></tr>';
+            }
+
+            html += '</tbody></table>';
+            document.getElementById('batchesTable').innerHTML = html;
+        }
+
+        // ============================================
+        // データ入力
+        // ============================================
+        async function loadMiniDashboard() {
+            try {
+                const response = await fetch('/api/dashboard');
+                const data = await response.json();
+
+                if (data.success) {
+                    const recommendations = data.recommendations;
+                    const breads = Object.keys(recommendations);
+
+                    let html = '<div style="font-size: 13px;">';
+                    breads.forEach(bread => {
+                        const rec = recommendations[bread];
+                        html += `
+                            <div style="margin-bottom: 12px; padding: 8px; background: white; border-radius: 6px;">
+                                <strong>${bread}</strong>:
+                                <span class="badge badge-info">${rec.order}個 推奨</span>
+                                <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                                    在庫: ${rec.leftover}個 / 予測: ${rec.forecast}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+
+                    document.getElementById('miniDashboard').innerHTML = html;
+                }
+            } catch (error) {
+                console.error('簡易ダッシュボード読み込みエラー:', error);
+            }
+        }
+
+        document.getElementById('inputForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = {
+                '細パン': {
+                    purchased: parseInt(formData.get('細パン_purchased')),
+                    leftover: parseInt(formData.get('細パン_leftover'))
+                },
+                '太パン': {
+                    purchased: parseInt(formData.get('太パン_purchased')),
+                    leftover: parseInt(formData.get('太パン_leftover'))
+                },
+                'サンドパン': {
+                    purchased: parseInt(formData.get('サンドパン_purchased')),
+                    leftover: parseInt(formData.get('サンドパン_leftover'))
+                },
+                'バゲット': {
+                    purchased: parseInt(formData.get('バゲット_purchased')),
+                    leftover: parseInt(formData.get('バゲット_leftover'))
+                }
+            };
+
+            try {
+                const response = await fetch('/api/input', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showPopup('success', '成功', 'データを保存しました！');
+                    e.target.reset();
+                    setTimeout(() => {
+                        switchTab('dashboard');
+                    }, 1500);
+                } else {
+                    showPopup('error', 'エラー', '保存に失敗しました: ' + (result.error || '不明なエラー'));
+                }
+            } catch (error) {
+                console.error('データ入力エラー:', error);
+                showPopup('error', 'エラー', 'データの保存に失敗しました');
+            }
+        });
+
+        // ============================================
+        // データ修正
+        // ============================================
+        async function loadRecords() {
+            const mode = document.querySelector('input[name="editMode"]:checked').value;
+            const days = mode === 'today' ? 1 : 30;
+
+            try {
+                const response = await fetch(`/api/records?days=${days}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    if (mode === 'today') {
+                        renderEditableTable(data.records);
+                    } else {
+                        renderRecordsTable(data.records);
+                    }
+                } else {
+                    showPopup('error', 'エラー', 'レコードの取得に失敗しました');
+                }
+            } catch (error) {
+                console.error('レコード読み込みエラー:', error);
+                showPopup('error', 'エラー', 'データの読み込みに失敗しました');
+            }
+        }
+
+        function renderEditableTable(records) {
+            if (records.length === 0) {
+                document.getElementById('editRecordsTable').innerHTML = '<p style="text-align: center; color: #999;">今日のレコードがありません</p>';
+                return;
+            }
+
+            editingRecords = {};
+            records.forEach(record => {
+                editingRecords[record.id] = {
+                    bread: record.bread,
+                    sold: record.sold,
+                    leftover: record.leftover
+                };
+            });
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>パン</th>
+                            <th>買った個数</th>
+                            <th>余り数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            records.forEach(record => {
+                html += `
+                    <tr class="edit-mode">
+                        <td>${record.day}</td>
+                        <td><strong>${record.bread}</strong></td>
+                        <td>
+                            <input type="number" class="editable-input"
+                                   value="${record.sold}"
+                                   min="0"
+                                   onchange="updateEditingRecord(${record.id}, 'sold', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="editable-input"
+                                   value="${record.leftover}"
+                                   min="0"
+                                   onchange="updateEditingRecord(${record.id}, 'leftover', this.value)">
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+                <div style="margin-top: 16px; text-align: right;">
+                    <button class="btn btn-success" onclick="saveAllEdits()">すべての変更を保存</button>
+                </div>
+            `;
+
+            document.getElementById('editRecordsTable').innerHTML = html;
+        }
+
+        function updateEditingRecord(id, field, value) {
+            if (editingRecords[id]) {
+                editingRecords[id][field] = parseInt(value);
+            }
+        }
+
+        async function saveAllEdits() {
+            try {
+                for (const [id, data] of Object.entries(editingRecords)) {
+                    await fetch(`/api/records/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sold: data.sold, leftover: data.leftover })
+                    });
+                }
+
+                showPopup('success', '成功', 'すべての変更を保存しました！');
+                setTimeout(() => {
+                    loadRecords();
+                }, 1500);
+            } catch (error) {
+                console.error('保存エラー:', error);
+                showPopup('error', 'エラー', '保存に失敗しました');
+            }
+        }
+
+        function renderRecordsTable(records) {
+            if (records.length === 0) {
+                document.getElementById('editRecordsTable').innerHTML = '<p style="text-align: center; color: #999;">レコードがありません</p>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>パン</th>
+                            <th>買った個数</th>
+                            <th>余り数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            records.forEach(record => {
+                html += `
+                    <tr>
+                        <td>${record.day}</td>
+                        <td><strong>${record.bread}</strong></td>
+                        <td>${record.sold}</td>
+                        <td>${record.leftover}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRecord(${record.id})">削除</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('editRecordsTable').innerHTML = html;
+        }
+
+        async function deleteRecord(id) {
+            if (!confirm('このレコードを削除しますか？')) return;
+
+            try {
+                const response = await fetch(`/api/records/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showPopup('success', '成功', '削除しました');
+                    loadRecords();
+                } else {
+                    showPopup('error', 'エラー', '削除に失敗しました');
+                }
+            } catch (error) {
+                console.error('削除エラー:', error);
+                showPopup('error', 'エラー', '削除に失敗しました');
+            }
+        }
+
+        // ============================================
+        // デバッグ機能
+        // ============================================
+        async function runBacktest() {
+            try {
+                const response = await fetch('/api/backtest');
+                const data = await response.json();
+
+                if (data.success) {
+                    let html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>パン</th>
+                                    <th>MAE（平均絶対誤差）</th>
+                                    <th>RMSE（二乗平均平方根誤差）</th>
+                                    <th>サンプル数</th>
+                                    <th>評価</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    Object.keys(data.results).forEach(bread => {
+                        const result = data.results[bread];
+
+                        if (result.error) {
+                            html += `
+                                <tr>
+                                    <td><strong>${bread}</strong></td>
+                                    <td colspan="4" style="color: #999;">${result.error}</td>
+                                </tr>
+                            `;
+                        } else {
+                            const evaluation = result.mae < 2 ? '優秀' : result.mae < 5 ? '良好' : '要改善';
+                            const badgeClass = result.mae < 2 ? 'badge-success' : result.mae < 5 ? 'badge-warning' : 'badge-danger';
+
+                            html += `
+                                <tr>
+                                    <td><strong>${bread}</strong></td>
+                                    <td>${result.mae}</td>
+                                    <td>${result.rmse}</td>
+                                    <td>${result.samples}</td>
+                                    <td><span class="badge ${badgeClass}">${evaluation}</span></td>
+                                </tr>
+                            `;
+                        }
+                    });
+
+                    html += '</tbody></table>';
+                    document.getElementById('backtestResults').innerHTML = html;
+                } else {
+                    showPopup('error', 'エラー', 'バックテストに失敗しました');
+                }
+            } catch (error) {
+                console.error('バックテストエラー:', error);
+                showPopup('error', 'エラー', 'バックテストの実行に失敗しました');
+            }
+        }
+
+        async function viewLogs() {
+            const password = document.getElementById('logPassword').value;
+
+            if (!password) {
+                showPopup('warning', '警告', 'パスワードを入力してください');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/logs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    renderLogs(data.logs);
+                } else {
+                    showPopup('error', 'エラー', data.error || 'ログの取得に失敗しました');
+                }
+            } catch (error) {
+                console.error('ログ取得エラー:', error);
+                showPopup('error', 'エラー', 'ログの取得に失敗しました');
+            }
+        }
+
+        function renderLogs(logs) {
+            if (logs.length === 0) {
+                document.getElementById('logsContainer').innerHTML = '<p style="color: #999;">ログがありません</p>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日時</th>
+                            <th>ユーザー</th>
+                            <th>アクション</th>
+                            <th>詳細</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            logs.forEach(log => {
+                html += `
+                    <tr>
+                        <td>${log.created_at}</td>
+                        <td><strong>${log.user}</strong></td>
+                        <td>${log.action}</td>
+                        <td style="font-size: 12px; color: #666;">${log.detail || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('logsContainer').innerHTML = html;
+        }
+
+        // ============================================
+        // ユーティリティ関数
+        // ============================================
+        function getWeatherIcon(main) {
+            const icons = {
+                'Clear': '☀️',
+                'Clouds': '☁️',
+                'Rain': '🌧️',
+                'Drizzle': '🌦️',
+                'Thunderstorm': '⛈️',
+                'Snow': '❄️',
+                'Mist': '🌫️',
+                'Fog': '🌫️'
+            };
+            return icons[main] || '🌤️';
+        }
+
+        function getEventIcon(impact) {
+            if (impact === 'very_high') return '🔥';
+            if (impact === 'high') return '⚠️';
+            return 'ℹ️';
+        }
+
+        function getImpactText(impact) {
+            const texts = {
+                'very_high': '来客数大幅増加予想',
+                'high': '来客数増加予想',
+                'medium': '来客数やや増加',
+                'low': '通常営業'
+            };
+            return texts[impact] || '要確認';
+        }
+
+        // ============================================
+        // 初期化
+        // ============================================
+        loadDashboard();
+    </script>
+</body>
+</html>

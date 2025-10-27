@@ -1,0 +1,44 @@
+# Node modules
+app/frontend/node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Development files
+*.log
+.env
+.env.local
+
+# Frontend development
+app/frontend/src/
+app/frontend/package.json
+app/frontend/package-lock.json
+app/frontend/vite.config.js
+app/frontend/index.html
+
+# Keep only built frontend
+!app/frontend/dist/
