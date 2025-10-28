@@ -1,3 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# データベース
+*.db
+*.sqlite
+*.sqlite3
+
+# 証明書と秘密鍵（本番では別管理）
+certs/
+*.pem
+*.key
+*.crt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log
+
+# 一時ファイル
+*.tmp
+*.bak
+
+# CSVエクスポート（データは別途バックアップ）
+*_export.csv
+test_data_*.csv
+forecast_comparison_results.csv
+
+# 環境変数
+.env
+.env.local
+.env.production
+
+# ビルド
+dist/
+build/
+*.egg-info/
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

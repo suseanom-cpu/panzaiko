@@ -1,3 +1,11 @@
+"""
+HTTPS対応版のFlaskアプリケーション
+
+使用方法:
+1. まず setup_https.sh を実行して証明書を生成
+2. python app_https.py で起動
+"""
+
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, g
 import os
 from datetime import date, datetime, timedelta
@@ -241,4 +249,29 @@ def api_logs():
     return jsonify({"success": True, "logs": logs})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    # 証明書のパスを設定
+    cert_path = os.path.join(BASE_DIR, '../../certs/cert.pem')
+    key_path = os.path.join(BASE_DIR, '../../certs/key.pem')
+
+    # 証明書が存在するか確認
+    if not os.path.exists(cert_path) or not os.path.exists(key_path):
+        print("❌ エラー: HTTPS証明書が見つかりません")
+        print("まず setup_https.sh を実行して証明書を生成してください:")
+        print("  cd /Users/seanm/Downloads/untitled\\ folder\\ 13/panzaiko")
+        print("  bash setup_https.sh")
+        exit(1)
+
+    print("=" * 60)
+    print("HTTPS対応サーバーを起動しています...")
+    print("=" * 60)
+    print(f"証明書: {cert_path}")
+    print(f"秘密鍵: {key_path}")
+    print("=" * 60)
+
+    # HTTPSサーバーとして起動
+    app.run(
+        host="0.0.0.0",
+        port=8443,  # HTTPS用の標準的なポート
+        debug=True,
+        ssl_context=(cert_path, key_path)
+    )

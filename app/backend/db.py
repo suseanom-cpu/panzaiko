@@ -1,8 +1,11 @@
 import sqlite3
+import os
 from flask import g
 from datetime import datetime
 
-DB_PATH = "breads_full.db"
+# データベースパスを設定（backendフォルダから2階層上）
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DB_PATH = os.path.join(BASE_DIR, "breads_full.db")
 
 def get_db():
     db = getattr(g, "_db", None)
